@@ -9,6 +9,13 @@ workflows:
             branches:
               only:
                 - main
+      - deploy:
+          filters:
+            branches:
+              only:
+                - main
+          requires:
+            - build
 
 # Define the jobs we want to run for this project
 jobs:
@@ -27,9 +34,16 @@ jobs:
           name: install-npm
           command: npm install
       - run:
-          name: Run Tests
-          command: npm test
+          name: test-run
+          command: npm run test
       - save_cache:
           key: dependency-cache-{{ checksum "package-lock.json" }}
           paths:
             - ./node_modules
+  deploy:
+    docker:
+      - image: circleci/node:10.16.3
+    steps:
+      - run:
+          name: deploy-application
+          command: ssh -o StrictHostKeyChecking=no $EC2_Connect@$EC2_Public_DNS "rm -rf SimpleApplication/;git clone https://github.com/MuhannedG/SimpleApplication.git; source SimpleApplication/deploy.sh"
