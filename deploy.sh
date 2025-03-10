@@ -13,6 +13,8 @@ cd SimpleApplication/
 
 # Install application dependencies
 npm install
+echo $PRIVATE_KEY > privatekey.pem
+echo $SERVER > server.crt
 
 # Start the applicatin with the process name SimpleApplication using pm2
 pm2 start ./bin/www --name SimpleApplication
